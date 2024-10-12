@@ -18,7 +18,7 @@ list of menu links that can be used to navigate throughout the dashboard.
         // { route: '/dashboard/transfers', text: 'Deposit' },
         // { route: '/dashboard/assets', text: 'Withdraw' },
         { route: '/dashboard/transfers', text: 'Transfers' },
-        { route: '/dashboard/transfers', text: 'Swap' },
+        { route: '/dashboard/swap', text: 'Swap' },
         // Old routes
         { route: '/dashboard/send', text: 'Payments' },
         { route: '/dashboard/assets', text: 'Assets' },
