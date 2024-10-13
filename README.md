@@ -1,6 +1,5 @@
 # StellaRamp <!-- omit in toc -->
 
-ReadMe.md
 This is a on-ramp between African Mobile Money and Stellar Blockchain. Users may enter their mobile phone and be charged with the amount of money the enter. After, they are given corresponding value in the selected African token. Users may swap African token to USDC using liquidity pool in the Stellar blockchain.
 Before this, you have to set you you Rust environment, read readme.md in contracts folder.
 ## Table of Contents <!-- omit in toc -->
