@@ -24,11 +24,11 @@
 
 <!-- `AssetStats` displayed at the top of the dashboard -->
 <AssetStats />
-
+<!-- 
 <div class="mt-4 flex justify-center space-x-4">
     <a href="/dashboard/deposit" class="btn btn-primary">Deposit</a>
     <a href="/dashboard/send" class="btn btn-secondary">Withdraw</a>
-</div>
+</div> -->
 
 <!-- `RecentPayments` and `FavoriteContacts` displayed as two columns on larger screens -->
 <div class="grid grid-cols-1 gap-10 lg:grid-cols-2">
