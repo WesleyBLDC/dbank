@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import { createEventDispatcher } from 'svelte'
 
     const dispatch = createEventDispatcher()
@@ -6,16 +6,65 @@
     let phoneNumber = ''
     let amount = ''
     let selectedCurrency = 'USDC'
+    let loading = false
+    let error: string | null = null
 
     function close() {
         dispatch('close')
     }
 
-    function handleSubmit() {
-        // TODO: Implement form submission logic
-        console.log('Submitted:', { phoneNumber, amount, currency: selectedCurrency })
-        // Close the modal after submission
-        close()
+    async function handleSubmit() {
+        loading = true
+        error = null
+
+        try {
+            // Convert USDC to ZMW if necessary (assuming 1 USDC = 20 ZMW)
+            const depositAmount = selectedCurrency === 'USDC' ? Number(amount) * 20 : Number(amount)
+            const depositCurrency = selectedCurrency === 'USDC' ? 'ZMW' : selectedCurrency
+
+            const depositDetails = {
+                amount: depositAmount,
+                currency: depositCurrency,
+                provider: 'MTN_MOMO_ZMB',
+                phoneNumber,
+                description: 'Deposit via PawaPay',
+            }
+
+            // Invoke the Stellar contract using the API endpoint
+            const command = `stellar contract invoke --id CDPPJRBAFMYXMPKNVOT7FZ6HYRGJDBGKCR4ZBJUFW3Y7LZXVGV7O3EE6 --source-account SCW7AWQJCPLPTAZGPHWWIEVWA2N2R32GWNJZM75Q2HT6UI5FNYQYW3JD --network testnet -- swap --to GCCUGGJ6ZIKL2YHCB2IZPCCXF52AURCOWGL3UCDPNWY5CSS5GRLD3XKK --buy_a true --out 100000000000000 --in_max 1000000000000000`
+
+            const response = await fetch('/api/invoke-contract', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ command }),
+            })
+
+            const data = await response.json()
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Failed to invoke Stellar contract')
+            }
+
+            console.log('Contract invocation result:', data.result)
+
+            // Check if the result contains successful contract execution
+            if (data.result.includes('in_successful_contract_call: true')) {
+                dispatch('deposit', depositDetails)
+                close()
+            } else {
+                throw new Error('Contract execution was not successful')
+            }
+        } catch (err) {
+            console.error('Deposit preparation failed:', err)
+            error =
+                err instanceof Error
+                    ? err.message
+                    : 'An error occurred while preparing your deposit'
+        } finally {
+            loading = false
+        }
     }
 
     $: currencySymbol = selectedCurrency
@@ -103,8 +152,13 @@
                     <button
                         type="submit"
                         class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800"
+                        disabled={loading}
                     >
-                        Confirm Deposit
+                        {#if loading}
+                            Processing...
+                        {:else}
+                            Confirm Deposit
+                        {/if}
                     </button>
                 </div>
             </form>
@@ -112,3 +166,7 @@
     </div>
 </div>
 <div class="fixed inset-0 z-40 bg-black opacity-25"></div>
+
+{#if error}
+    <div class="mt-4 text-sm text-red-500">{error}</div>
+{/if}
