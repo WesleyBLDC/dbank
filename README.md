@@ -1,15 +1,8 @@
-# BasicPay <!-- omit in toc -->
+# StellaRamp <!-- omit in toc -->
 
-> The app that lets you pay, _basically_, anyone.
-
-An example payments application demonstrating integrations of various Stellar
-features and SEPs in a user-facing product.
-
-> :warning: **CAUTION:** Although BasicPay is a full-fledged application on
-> Stellar's Testnet, it has been built solely to showcase Stellar functionality
-> for the educational purposes of this tutorial, not to be copied, pasted, and
-> used on Mainnet.
-
+ReadMe.md
+This is a on-ramp between African Mobile Money and Stellar Blockchain. Users may enter their mobile phone and be charged with the amount of money the enter. After, they are given corresponding value in the selected African token. Users may swap African token to USDC using liquidity pool in the Stellar blockchain.
+Before this, you have to set you you Rust environment, read readme.md in contracts folder.
 ## Table of Contents <!-- omit in toc -->
 
 - [Companion App](#companion-app)
