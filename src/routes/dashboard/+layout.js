@@ -50,18 +50,18 @@ export async function load() {
         sponsor: null,
     })
 
-    const balancesStore = writable(balances)
+    // const balancesStore = writable(balances)
 
     let payments = []
-    try {
-        payments = await fetchRecentPayments(publicKey)
-    } catch (error) {
-        console.error('Error fetching recent payments:', error)
-    }
+    // try {
+    payments = await fetchRecentPayments(publicKey)
+    // } catch (error) {
+    //     console.error('Error fetching recent payments:', error)
+    // }
 
     return {
         publicKey: publicKey,
-        balances: balancesStore,
+        balances: balances,
         payments: payments,
     }
 }

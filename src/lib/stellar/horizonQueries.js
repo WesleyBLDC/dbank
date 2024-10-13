@@ -82,19 +82,26 @@ export async function fetchAccountBalances(publicKey) {
  * @returns {Promise<PaymentOperationRecord[]>} Array containing details for each recent payment
  */
 export async function fetchRecentPayments(publicKey, limit = 10) {
-    try {
-        const payments = await server
-            .payments()
-            .forAccount(publicKey)
-            .limit(limit)
-            .order('desc')
-            .call()
-        return payments.records
-    } catch (error) {
-        console.error('Error fetching recent payments:', error)
-        // Return an empty array if there's an error
-        return []
-    }
+    const { records } = await server
+        .payments()
+        .forAccount(publicKey)
+        .limit(limit)
+        .order('desc')
+        .call()
+    return records
+    // try {
+    //     const payments = await server
+    //         .payments()
+    //         .forAccount(publicKey)
+    //         .limit(limit)
+    //         .order('desc')
+    //         .call()
+    //     return payments.records
+    // } catch (error) {
+    //     console.error('Error fetching recent payments:', error)
+    //     // Return an empty array if there's an error
+    //     return []
+    // }
 }
 
 /**

@@ -2,7 +2,7 @@
     import { createEventDispatcher, getContext } from 'svelte'
 
     const dispatch = createEventDispatcher()
-    const { update: updateBalances } = getContext('balances')
+    // const { update: updateBalances } = getContext('balances')
 
     let phoneNumber = ''
     let amount = ''
