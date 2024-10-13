@@ -9,4 +9,10 @@ export default {
         './src/lib/components/**/*.{html,js,svelte,ts}',
     ],
     plugins: [typography, daisyui],
+    theme: {
+        extend: {},
+    },
+    daisyui: {
+        themes: ['dark'],
+    },
 }
