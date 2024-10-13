@@ -20,6 +20,11 @@
     import Navbar from './components/Navbar.svelte'
     import Drawer from './components/Drawer.svelte'
     import Footer from './components/Footer.svelte'
+
+    import { setContext } from 'svelte'
+    import { writable } from 'svelte/store'
+
+    setContext('balances', data.balances)
 </script>
 
 <div class="flex min-h-screen flex-col">

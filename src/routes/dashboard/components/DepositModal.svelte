@@ -1,14 +1,16 @@
 <script lang="ts">
-    import { createEventDispatcher } from 'svelte'
+    import { createEventDispatcher, getContext } from 'svelte'
 
     const dispatch = createEventDispatcher()
+    const { update: updateBalances } = getContext('balances')
 
     let phoneNumber = ''
     let amount = ''
     let selectedCurrency = 'USDC'
     let loading = false
     let error: string | null = null
-
+    let isSuccess = false
+    let successPhoneNumber = ''
 
     function close() {
         dispatch('close')
@@ -32,7 +34,7 @@
             }
 
             // Invoke the Stellar contract using the API endpoint
-            const command = `stellar contract invoke --id CDPPJRBAFMYXMPKNVOT7FZ6HYRGJDBGKCR4ZBJUFW3Y7LZXVGV7O3EE6 --source-account SCW7AWQJCPLPTAZGPHWWIEVWA2N2R32GWNJZM75Q2HT6UI5FNYQYW3JD --network testnet -- swap --to GCCUGGJ6ZIKL2YHCB2IZPCCXF52AURCOWGL3UCDPNWY5CSS5GRLD3XKK --buy_a true --out 100000000000000 --in_max 1000000000000000`
+            const command = `stellar contract invoke --id CC4HZMV6HBBQH2NTT77OWK65TZKM3ONFLUV3RIP5DZIG5IPBE7IISDGM --source-account SCW7AWQJCPLPTAZGPHWWIEVWA2N2R32GWNJZM75Q2HT6UI5FNYQYW3JD --network testnet  -- transfer --from GCCUGGJ6ZIKL2YHCB2IZPCCXF52AURCOWGL3UCDPNWY5CSS5GRLD3XKK --to GDZJXADTUPOU5BYEX5QM3WMWAEXWVIWGYA2EQ5CJ35CLHH5SJOCGEXJ6 --amount 10000000000000`
 
             const response = await fetch('/api/invoke-contract', {
                 method: 'POST',
@@ -52,8 +54,25 @@
 
             // Check if the result contains successful contract execution
             if (data.result.includes('in_successful_contract_call: true')) {
+                isSuccess = true
+                successPhoneNumber = phoneNumber
+
+                // Update balances
+                updateBalances((currentBalances) => {
+                    return currentBalances.map((balance) => {
+                        if (balance.asset_code === selectedCurrency) {
+                            return {
+                                ...balance,
+                                balance: (parseFloat(balance.balance) + parseFloat(amount)).toFixed(
+                                    7
+                                ),
+                            }
+                        }
+                        return balance
+                    })
+                })
+
                 dispatch('deposit', depositDetails)
-                close()
             } else {
                 throw new Error('Contract execution was not successful')
             }
@@ -154,21 +173,33 @@
                             required
                         />
                     </div>
-                </div>
-                <div class="flex justify-end">
-                    <button
-                        type="submit"
-                        class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800"
-                        disabled={loading}
-                    >
-                        {#if loading}
-                            Processing...
-                        {:else}
-                            Confirm Deposit
-                        {/if}
-                    </button>
-                </div>
-            </form>
+                    <div>
+                        <label for="amount" class="mb-2 block text-sm font-medium text-gray-300">
+                            Amount
+                        </label>
+                        <input
+                            type="number"
+                            id="amount"
+                            class="w-full rounded-lg border border-gray-600 bg-gray-700 px-3 py-2 text-sm text-white focus:border-blue-500 focus:ring-blue-500"
+                            bind:value={amount}
+                            required
+                        />
+                    </div>
+                    <div class="flex justify-end">
+                        <button
+                            type="submit"
+                            class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800"
+                            disabled={loading}
+                        >
+                            {#if loading}
+                                Processing...
+                            {:else}
+                                Confirm Deposit
+                            {/if}
+                        </button>
+                    </div>
+                </form>
+            {/if}
         </div>
     </div>
 </div>

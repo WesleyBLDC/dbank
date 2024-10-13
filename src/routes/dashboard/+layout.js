@@ -8,26 +8,60 @@
 
 import { get } from 'svelte/store'
 import { goto } from '$app/navigation'
+import { writable } from 'svelte/store'
 
 import { fetchAccountBalances, fetchRecentPayments } from '$lib/stellar/horizonQueries'
 import { walletStore } from '$lib/stores/walletStore'
 
 /** @type {import ('./$types').LayoutLoad} */
 export async function load() {
-    // We check that a wallet's `publicKey` has been stored in the browser, and
-    // if it isn't there, we redirect to `/signup`. Since we define this
-    // behavior in the top-most dashboard `+layout.js` file, it will have the
-    // same affect on any nested pages visited.
     const { publicKey } = get(walletStore)
     if (!publicKey) {
         goto('/signup')
     }
 
-    // We return the `balances` and `payments` using await to avoid
-    // waterfalls and additional loading time
+    let balances = []
+    // Add hardcoded USDC balance
+    balances.push({
+        balance: '1000.0000000',
+        asset_type: 'credit_alphanum4',
+        asset_code: 'USDC',
+        asset_issuer: 'GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5',
+        limit: '922337203685.4775807',
+        buying_liabilities: '0.0000000',
+        selling_liabilities: '0.0000000',
+        last_modified_ledger: 420818,
+        is_authorized: true,
+        is_authorized_to_maintain_liabilities: true,
+        sponsor: null,
+    })
+
+    balances.push({
+        balance: '1000000.0000000',
+        asset_type: 'credit_alphanum4',
+        asset_code: 'KES',
+        asset_issuer: 'GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5',
+        limit: '922337203685.4775807',
+        buying_liabilities: '0.0000000',
+        selling_liabilities: '0.0000000',
+        last_modified_ledger: 420818,
+        is_authorized: true,
+        is_authorized_to_maintain_liabilities: true,
+        sponsor: null,
+    })
+
+    const balancesStore = writable(balances)
+
+    let payments = []
+    try {
+        payments = await fetchRecentPayments(publicKey)
+    } catch (error) {
+        console.error('Error fetching recent payments:', error)
+    }
+
     return {
         publicKey: publicKey,
-        balances: await fetchAccountBalances(publicKey),
-        payments: await fetchRecentPayments(publicKey),
+        balances: balancesStore,
+        payments: payments,
     }
 }
