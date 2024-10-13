@@ -1,7 +1,6 @@
 /**
  * Sends a POST request to create a deposit.
  * 
- * @param {number} depositId - The amount to be deposited.
  * @param {number} amount - The currency of the deposit (e.g., ZMW).
  * @param {string} currency - The country code (e.g., ZMB).
  * @param {string} correspondent - The correspondent (e.g., MTN_MOMO_ZMB).
@@ -9,7 +8,7 @@
  * @param {string} statementDescription - A description for the statement.
  * @returns {Promise<Object>} - The response data or an error message.
  */
-export async function requestDeposit(depositId, amount, currency, correspondent, payer, statementDescription) {
+export async function requestDeposit(amount, currency, correspondent, payer, statementDescription) {
   const token = 'eyJraWQiOiIxIiwiYWxnIjoiRVMyNTYifQ.eyJ0dCI6IkFBVCIsInN1YiI6IjM0NzAiLCJleHAiOjIwNDQyOTA0NTUsImlhdCI6MTcyODc1NzY1NSwicG0iOiJEQUYsUEFGIiwianRpIjoiYzgyYzdiNGQtMGE2Zi00NTVmLWEzNzctNTY2NzViNzI2N2M4In0.-V9GqsJiBpjLnkbraPmtqbU35XnY_QX__iynrSb91wJ6aFXjvOrmsSZPIH-O6Q0rChdLI_HNv57ChDV2wdQksA';  // Replace <token> with your actual token
   const url = 'https://api.sandbox.pawapay.io/deposits';
 
@@ -22,7 +21,7 @@ export async function requestDeposit(depositId, amount, currency, correspondent,
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      depositId: depositId,  // Insert depositId dynamically
+      depositId: Math.random() * 100000,  // Insert depositId dynamically
       amount: amount.toString(),  // Ensure the amount is a string
       currency: currency,
       correspondent: correspondent,
